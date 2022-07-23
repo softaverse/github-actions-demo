@@ -1,0 +1,35 @@
+name: Softaverse Demo GitHub Actions
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  AWS_ENVIRONMENT_NAME: Testapp-env
+  AWS_DEFAULT_REGION: ap-southeast-1
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install
+        run: |
+          node -v
+          npm install
+
+      - name: Deploy
+        uses: hmanzur/actions-aws-eb@v1.0.0
+        with:
+          command: 'deploy ${{ env.AWS_ENVIRONMENT_NAME }}'
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
